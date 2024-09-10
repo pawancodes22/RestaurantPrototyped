@@ -3,6 +3,7 @@ import FoodItems from './components/FoodItems'
 import RestaurantContext from './context/RestaurantContext'
 import Header from './components/Header'
 import Tabs from './components/Tabs'
+import FailureView from './components/FailureView'
 import LoaderView from './components/LoaderView'
 import './App.css'
 
@@ -45,6 +46,7 @@ const App = () => {
   const changeActiveTabId = tabId => setTabId(tabId)
 
   const fetchApi = async () => {
+    setApiStatus(apiConstants.pending)
     const url =
       'https://apis2.ccbp.in/restaurant-app/restaurant-menu-list-details'
     const response = await fetch(url)
@@ -91,11 +93,14 @@ const App = () => {
       setData(rearrangedResponse)
       setTabId(rearrangedResponse[0].menuCategoryId)
       setApiStatus(apiConstants.success)
+    } else {
+      setApiStatus(apiConstants.failure)
     }
   }
 
   useEffect(() => {
     fetchApi()
+    // eslint-disable-next-line
   }, [])
 
   const DataView = () => (
@@ -104,6 +109,19 @@ const App = () => {
       <FoodItems />
     </>
   )
+
+  const Output = () => {
+    switch (apiStatus) {
+      case apiConstants.pending:
+        return <LoaderView />
+      case apiConstants.success:
+        return DataView()
+      case apiConstants.failure:
+        return <FailureView fetchApi={fetchApi} />
+      default:
+        return null
+    }
+  }
 
   return (
     <RestaurantContext.Provider
@@ -117,9 +135,7 @@ const App = () => {
       }}
     >
       <Header />
-      {apiStatus !== apiConstants.pending ? DataView() : <LoaderView />}
-      <Tabs data={data} activeTabId={activeTabId} />
-      <FoodItems />
+      {Output()}
     </RestaurantContext.Provider>
   )
 }
