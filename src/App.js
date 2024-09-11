@@ -3,6 +3,7 @@ import {Switch, Route, BrowserRouter} from 'react-router-dom'
 import RestaurantContext from './context/RestaurantContext'
 import Home from './components/Home'
 import Login from './components/Login'
+import ProtectedRoute from './components/ProtectedRoute'
 import './App.css'
 
 const App = () => {
@@ -48,8 +49,8 @@ const App = () => {
     >
       <BrowserRouter>
         <Switch>
-          <Route exact path="/" component={Home} />
           <Route path="/login" component={Login} />
+          <ProtectedRoute exact path="/" component={Home} />
         </Switch>
       </BrowserRouter>
     </RestaurantContext.Provider>
